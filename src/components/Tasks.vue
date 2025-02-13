@@ -18,9 +18,32 @@
     </v-col>
   </v-row>
   <v-row>
+    <v-col>
+      <v-btn
+        @click="filter = 'completed'"
+        :color="filter == 'completed' ? 'green' : 'gray'"
+        class="mr-2"
+        >Completed ({{ completedTasks?.length }})</v-btn
+      >
+      <v-btn
+        @click="filter = 'pending'"
+        :color="filter == 'pending' ? 'orange' : 'gray'"
+        class="mr-2"
+        >Pending ({{ pendingTasks?.length }})</v-btn
+      >
+      <v-btn @click="filter = 'all'" :color="filter == 'all' ? 'black' : 'gray'"
+        >All ({{ tasks?.length }})</v-btn
+      >
+    </v-col>
+  </v-row>
+  <v-row>
     <v-col cols="12">
       <v-list>
-        <v-list-item v-for="task in tasks" :key="task.id" :title="task.title">
+        <v-list-item
+          v-for="task in filteredTasks(filter)"
+          :key="task.id"
+          :title="task.title"
+        >
           <template v-slot:prepend>
             <v-icon
               :icon="task.completed ? 'mdi-check' : 'mdi-circle-outline'"
@@ -103,11 +126,12 @@
 import { useTasksStore } from "@/store/tasks";
 import { Task } from "@/types";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { required, maxLength } from "@/helpers";
 const tasksStore = useTasksStore();
 tasksStore.getTasks();
-const { tasks } = storeToRefs(tasksStore);
+const { tasks, completedTasks, pendingTasks, filteredTasks } =
+  storeToRefs(tasksStore);
 
 const newTask = ref<Task>({
   title: "",
@@ -115,4 +139,6 @@ const newTask = ref<Task>({
 });
 
 const taskFormValid = ref(false);
+
+let filter = ref("completed");
 </script>

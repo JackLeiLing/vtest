@@ -1,6 +1,7 @@
 // Utilities
 import { defineStore } from "pinia";
 import { Task } from "./../types";
+import { isSwitchStatement } from "typescript";
 
 const taskURL = "https://jsonplaceholder.typicode.com/todos";
 
@@ -72,6 +73,25 @@ export const useTasksStore = defineStore("tasksStore", {
       } catch (error) {
         this.errors = error as Record<string, unknown>;
       }
+    },
+  },
+  getters: {
+    completedTasks(state) {
+      return state.tasks.filter((t) => t.completed);
+    },
+    pendingTasks(state) {
+      return state.tasks.filter((t) => !t.completed);
+    },
+    filteredTasks(state) {
+      return (filter: string) => {
+        if (filter == "completed") {
+          return state.tasks.filter((t) => t.completed);
+        } else if (filter == "pending") {
+          return state.tasks.filter((t) => !t.completed);
+        } else {
+          return state.tasks;
+        }
+      };
     },
   },
 });
