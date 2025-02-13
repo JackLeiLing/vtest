@@ -38,6 +38,7 @@
               icon="mdi-delete-outline"
               color="purple-darken-4"
               size="small"
+              @click="tasksStore.deleteTask(task)"
             />
           </template>
         </v-list-item>

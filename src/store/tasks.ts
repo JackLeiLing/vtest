@@ -30,5 +30,19 @@ export const useTasksStore = defineStore("tasksStore", {
         this.errors = error as Record<string, unknown>;
       }
     },
+    async deleteTask(task: Task) {
+      // the JSON placeholder API is not persisting the change, therefore push the id to demo the new task is saved in client store. it shouldn't be pushed if the API can generate ID and save in DB.
+      this.tasks = this.tasks.filter((t) => t.id !== task.id);
+      try {
+        await fetch(taskURL + "/" + task.id, {
+          method: "DELETE",
+          body: JSON.stringify({
+            id: task.id,
+          }),
+        });
+      } catch (error) {
+        this.errors = error as Record<string, unknown>;
+      }
+    },
   },
 });
