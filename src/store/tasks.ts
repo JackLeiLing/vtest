@@ -8,6 +8,7 @@ export const useTasksStore = defineStore("tasksStore", {
   state: () => ({
     tasks: <Task[]>[],
     errors: {},
+    selectedTask: <Task>{},
   }),
   actions: {
     async getTasks() {
@@ -39,6 +40,34 @@ export const useTasksStore = defineStore("tasksStore", {
           body: JSON.stringify({
             id: task.id,
           }),
+        });
+      } catch (error) {
+        this.errors = error as Record<string, unknown>;
+      }
+    },
+    async getTaskById(id: number) {
+      try {
+        this.selectedTask = await (
+          await fetch(taskURL + "/" + id.toString())
+        ).json();
+      } catch (error) {
+        this.errors = error as Record<string, unknown>;
+      }
+    },
+    async updateTask(payload: Task) {
+      let task = this.tasks.find((t) => t.id == payload.id);
+      if (task) {
+        task.title = payload.title;
+        task.completed = payload.completed;
+      }
+
+      try {
+        await fetch(taskURL + "/" + payload.id, {
+          method: "PATCH",
+          body: JSON.stringify(this.selectedTask),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
         });
       } catch (error) {
         this.errors = error as Record<string, unknown>;
