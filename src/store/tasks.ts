@@ -58,7 +58,7 @@ export const useTasksStore = defineStore("tasksStore", {
       }
     },
     async updateTask(payload: Task) {
-      let task = this.tasks.find((t) => t.id == payload.id);
+      const task = this.tasks.find((t) => t.id == payload.id);
       if (task) {
         task.title = payload.title;
         task.completed = payload.completed;
