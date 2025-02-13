@@ -4,11 +4,17 @@
       <v-text-field
         placeholder="Add new task..."
         density="compact"
+        v-model="newTask.title"
       ></v-text-field>
     </v-col>
 
     <v-col cols="2" md="1">
-      <v-btn icon="mdi-plus" color="blue" size="small"></v-btn>
+      <v-btn
+        icon="mdi-plus"
+        color="blue"
+        size="small"
+        @click="tasksStore.createTask(newTask)"
+      ></v-btn>
     </v-col>
   </v-row>
   <v-row>
@@ -42,9 +48,15 @@
 
 <script lang="ts" setup>
 import { useTasksStore } from "@/store/tasks";
+import { Task } from "@/types";
 import { storeToRefs } from "pinia";
+import { ref } from "vue";
 const tasksStore = useTasksStore();
 tasksStore.getTasks();
 const { tasks } = storeToRefs(tasksStore);
-console.log(tasks.value);
+
+const newTask = ref<Task>({
+  title: "",
+  completed: false,
+});
 </script>
