@@ -1,44 +1,47 @@
 <template>
-  <v-row>
-    <v-col cols="10" md="11">
-      <v-text-field
-        placeholder="Add new task..."
-        density="compact"
-        v-model="newTask.title"
-      ></v-text-field>
-    </v-col>
+  <v-form v-model="validNewTask">
+    <v-row>
+      <v-col cols="10" md="11">
+        <v-text-field
+          placeholder="Add new task..."
+          density="compact"
+          v-model="newTask.title"
+          :rules="[required, maxLength(10)]"
+        ></v-text-field>
+      </v-col>
 
-    <v-col cols="2" md="1">
-      <v-btn
-        icon="mdi-plus"
-        color="blue"
-        size="small"
-        @click="tasksStore.createTask(newTask)"
-      ></v-btn>
-    </v-col>
-  </v-row>
+      <v-col cols="2" md="1">
+        <v-btn
+          icon="mdi-plus"
+          color="blue"
+          size="small"
+          @click="createNewTask"
+        ></v-btn>
+      </v-col>
+    </v-row>
+  </v-form>
   <v-row>
     <v-col>
       <v-btn
         @click="filter = 'completed'"
         :color="filter == 'completed' ? 'green' : 'gray'"
         class="mr-2"
-        >Completed ({{ completedTasks?.length }})</v-btn
+        >Completed ({{ filteredTasks("completed")?.length }})</v-btn
       >
       <v-btn
         @click="filter = 'pending'"
         :color="filter == 'pending' ? 'orange' : 'gray'"
         class="mr-2"
-        >Pending ({{ pendingTasks?.length }})</v-btn
+        >Pending ({{ filteredTasks("pending")?.length }})</v-btn
       >
-      <v-btn @click="filter = 'all'" :color="filter == 'all' ? 'black' : 'gray'"
+      <v-btn @click="filter = 'all'" :color="filter == 'all' ? 'blue' : 'gray'"
         >All ({{ tasks?.length }})</v-btn
       >
     </v-col>
   </v-row>
   <v-row>
     <v-col cols="12">
-      <v-list>
+      <v-slide-y-transition class="py-0" tag="v-list" group>
         <v-list-item
           v-for="task in filteredTasks(filter)"
           :key="task.id"
@@ -55,8 +58,7 @@
               <template v-slot:activator="{ props: activatorProps }">
                 <v-btn
                   v-bind="activatorProps"
-                  icon="mdi-pencil-outline"
-                  size="small"
+                  size="x-small"
                   color="green-darken-4"
                   class="mr-2"
                   @click="
@@ -66,7 +68,8 @@
                       }
                     }
                   "
-                ></v-btn>
+                  >Edit</v-btn
+                >
               </template>
 
               <template v-slot:default="{ isActive }">
@@ -110,14 +113,14 @@
               </template>
             </v-dialog>
             <v-btn
-              icon="mdi-delete-outline"
               color="orange-darken-4"
-              size="small"
+              size="x-small"
               @click="tasksStore.deleteTask(task)"
-            />
+              >Delete</v-btn
+            >
           </template>
         </v-list-item>
-      </v-list>
+      </v-slide-y-transition>
     </v-col>
   </v-row>
 </template>
@@ -130,8 +133,7 @@ import { ref, watchEffect } from "vue";
 import { required, maxLength } from "@/helpers";
 const tasksStore = useTasksStore();
 tasksStore.getTasks();
-const { tasks, completedTasks, pendingTasks, filteredTasks } =
-  storeToRefs(tasksStore);
+const { tasks, filteredTasks } = storeToRefs(tasksStore);
 
 const newTask = ref<Task>({
   title: "",
@@ -141,4 +143,11 @@ const newTask = ref<Task>({
 const taskFormValid = ref(false);
 
 let filter = ref("completed");
+
+const validNewTask = ref(false);
+const createNewTask = () => {
+  if (validNewTask.value) {
+    tasksStore.createTask(newTask.value);
+  }
+};
 </script>
