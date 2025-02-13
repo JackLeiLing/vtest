@@ -1,7 +1,7 @@
 <template>
-  <HelloWorld />
+  <Tasks />
 </template>
 
 <script lang="ts" setup>
-  import HelloWorld from '@/components/HelloWorld.vue'
+import Tasks from "@/components/Tasks.vue";
 </script>
