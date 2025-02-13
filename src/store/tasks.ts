@@ -15,7 +15,9 @@ export const useTasksStore = defineStore("tasksStore", {
     async getTasks() {
       try {
         this.tasks = await (await fetch(taskURL)).json();
-      } catch (error) {}
+      } catch (error) {
+        this.errors = error as Record<string, unknown>;
+      }
     },
     async createTask(task: Task) {
       // the JSON placeholder API is not persisting the change, therefore push the id to demo the new task is saved in client store. it shouldn't be pushed if the API can generate ID and save in DB.
@@ -76,12 +78,6 @@ export const useTasksStore = defineStore("tasksStore", {
     },
   },
   getters: {
-    completedTasks(state) {
-      return state.tasks.filter((t) => t.completed);
-    },
-    pendingTasks(state) {
-      return state.tasks.filter((t) => !t.completed);
-    },
     filteredTasks(state) {
       return (filter: string) => {
         if (filter == "completed") {
